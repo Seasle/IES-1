@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="./Styles/main.css">
 </head>
 <body>
+    <div class="loader" data-container="loader">
+        <div class="loader__spin"></div>
+    </div>
     <section class="main">
         <h1 class="main__title">Ваше любимое блюдо</h1>
         <div class="main__block">
@@ -21,6 +24,9 @@
                 <button class="button" data-control="restart">Еще хочу</button>
             </div>
         </div>
+        <!-- <div class="main__container"> -->
+            <div class="main__result" data-container="result"></div>
+        <!-- </div> -->
         <pre class="main__debug" data-container="debug"></pre>
         <label class="menu__toggle">
             <input type="checkbox" class="menu__checkbox" data-control="debug">

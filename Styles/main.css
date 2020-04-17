@@ -1,6 +1,7 @@
 :root {
     --font-size: 16px;
     --font-family: 'Montserrat', 'Segoe UI', Arial, Helvetica, sans-serif;
+    --primary-color: #3c91b3;
     --default-shadow: 0 2px 2px rgba(0, 0, 0, 0.075),
                       0 4px 4px rgba(0, 0, 0, 0.075),
                       0 8px 8px rgba(0, 0, 0, 0.075),
@@ -18,6 +19,34 @@ body {
     overflow: hidden;
 }
 
+.loader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ffffff;
+    z-index: 100;
+}
+
+.loader--hide {
+    animation: hide-loader 1s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.loader__spin {
+    width: 20vmin;
+    height: 20vmin;
+    border-radius: 50%;
+    border: 1em solid transparent;
+    border-top-color: var(--primary-color);
+    filter: drop-shadow(0 0 16px var(--primary-color));
+    animation: spin 1s ease-in-out infinite;
+}
+
 .main {
     width: 100vw;
     height: 100vh;
@@ -25,13 +54,12 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(to bottom, #3c91b3, #3a88ad);
+    background: var(--primary-color);
+    overflow: auto;
 }
 
 .main__title {
     margin: 0;
-    display: flex;
-    flex-direction: column;
     font-size: 4em;
     font-weight: 500;
     text-align: center;
@@ -69,13 +97,24 @@ body {
     color: #ffffff;
 }
 
-.main__debug {
+.main__result {
     margin: 0 auto;
+    padding: 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.main__debug {
+    max-width: 60vw;
+    min-height: 240px;
+    max-height: 480px;
+    margin: 2em auto 0 auto;
     padding: 0.5em;
     border: 0.5em solid transparent;
     border-radius: 4px;
     font-size: 1em;
-    font-family: 'Consolas';
+    font-family: 'Consolas', monospace;
     tab-size: 4;
     background: #222222;
     color: #ffffff;
@@ -96,8 +135,12 @@ body {
     background: #cccccc;
 }
 
+.main__debug::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 .menu__toggle {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     padding: 1em;
@@ -156,8 +199,51 @@ body {
     outline: none;
 }
 
+.item {
+    margin: 1em 0.5em;
+    padding: 1em;
+    border-radius: 4px;
+    display: flex;
+    font-size: 1.25em;
+    background: #ffffff;
+    box-shadow: var(--default-shadow);
+}
+
+.item__name {
+    margin: 0;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.item__rating {
+    margin-left: 0.5em;
+    font-size: 0.8em;
+    font-style: italic;
+}
+
 [hidden] {
     display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    75%,
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes hide-loader {
+    0% {
+        clip-path: circle(100% at 50% 50%);
+    }
+
+    100% {
+        clip-path: circle(0% at 50% 50%);
+    }
 }
 
 @media screen and (max-width: 1280px) {

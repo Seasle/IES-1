@@ -1,6 +1,8 @@
-import { FoodRating } from './food.js';
-import { Foods, Ingredients } from './store.js';
+import { Food, FoodRating } from './food.js';
+import { createAutoEnum, render, round, load } from './utils.js';
 
+const Ingredients = createAutoEnum();
+const Foods = [];
 const rating = new FoodRating();
 
 const question = document.querySelector('[data-question]');
@@ -45,11 +47,44 @@ const bind = () => {
         start();
         update();
     });
+
+    controls.get('debug').checked = location.hash === '#debug';
 };
 
 const start = () => {
     store.keys = Object.keys(Ingredients);
     store.ingredients = [];
+};
+
+const fill = foods => {
+    const container = containers.get('result');
+
+    container.innerHTML = '';
+
+    if (store.ingredients.length > 0 && foods.length > 0) {
+        for (const entry of foods) {
+            const percent = round(entry.rating * 100, 2);
+            const element = render('div', { className: 'item', 'data-percent': percent }, [
+                render('p', {
+                    className: 'item__name',
+                    textContent: entry.food.name
+                }),
+                render('span', {
+                    className: 'item__rating',
+                    textContent: `${percent}%`
+                })
+            ]);
+
+            container.append(element);
+        }
+    } else {
+        if (store.ingredients.length > 0) {
+            question.textContent = `У нас нету блюда с такими ингредиентами`;
+
+            containers.get('buttons').setAttribute('hidden', true);
+            containers.get('done').removeAttribute('hidden');
+        }
+    }
 };
 
 const update = () => {
@@ -81,7 +116,20 @@ const update = () => {
             }
         }));
 
-    containers.get('debug').textContent = JSON.stringify(foods, null, '\t');
+    fill(foods);
+    containers.get('debug').textContent = JSON.stringify({
+        store: {
+            keys: store.keys,
+            ingredients: store.ingredients.reduce((accumulator, ingredient) => {
+                const entry = Object.entries(Ingredients).find(([key, value]) => (value === ingredient));
+                accumulator.push(entry[0]);
+
+                return accumulator;
+            }, []),
+            picked: store.picked
+        },
+        foods
+    }, null, '\t');
 };
 
 const view = () => {
@@ -92,19 +140,30 @@ const view = () => {
     }
 };
 
-window.addEventListener('DOMContentLoaded', () => {
+load('./Data/foods.json').then(data => {
+    for (const entry of data) {
+        const food = new Food(entry.name, entry.ingredients.map(name => Ingredients[name]));
+
+        Foods.push(food);
+    }
+
     bind();
     start();
     update();
     view();
 
-    window.addEventListener('click', () => {
-        if (!document.fullscreen) {
-            document.body.requestFullscreen();
-        }
-    });
-
     window.addEventListener('hashchange', () => {
         view();
     });
+
+    const loader = containers.get('loader');
+
+    const loaderHandler = () => {
+        loader.removeEventListener('animationend', loaderHandler);
+
+        loader.remove();
+    }
+
+    loader.classList.add('loader--hide');
+    loader.addEventListener('animationend', loaderHandler);
 });
